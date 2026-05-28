@@ -14,6 +14,10 @@ public class PruebaP2_Archivos {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+       
+        
+          new claseGui().setVisible(true);
+        
         
     }
     
