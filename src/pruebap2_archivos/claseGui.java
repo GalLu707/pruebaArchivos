@@ -7,10 +7,15 @@ package pruebap2_archivos;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -109,10 +114,79 @@ public class claseGui extends JFrame{
 
 
               
+              btnSeleccionar.addActionListener(new ActionListener() {
+                 
+                  @Override
+                  public void actionPerformed(ActionEvent e){
+                      
+                      JFileChooser selector = new JFileChooser();
+                selector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); // Solo carpetas
+                int opcion = selector.showOpenDialog(claseGui.this);
+                if (opcion == JFileChooser.APPROVE_OPTION) {
+                    txtruta.setText(selector.getSelectedFile().getAbsolutePath());
+                      
+                      
+                  }
+                  
+                  }
+                  
+              });
+              
+              btnAnalizar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ejecutarAnalisis();
+            }
+        });
               
               
-              
-          } 
-           
+
+     }
+
+    private void ejecutarAnalisis() {
+        String rutaIntroducida = txtruta.getText().trim();
+        String textoBusqueda = txtBusqueda.getText().trim();
+
+        
+         if (rutaIntroducida.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, introduce o selecciona una ruta.", "Campo vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        File directorio = new File(rutaIntroducida);
+
+        if (!directorio.exists()) {
+            JOptionPane.showMessageDialog(this, "La ruta introducida no existe en el sistema.", "Error de Ruta", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!directorio.isDirectory()) {
+            JOptionPane.showMessageDialog(this, "La ruta corresponde a un archivo individual. Debe seleccionar un Directorio (Carpeta).", "Error de Tipo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        ResultadoBusqueda resul = logica.procesarDir(directorio, textoBusqueda);
+        
+        lblTxt.setText("TXT: " + resul.txt + " archivos");
+        lblJava.setText("JAVA: " + resul.java + " archivos");
+        lblPdf.setText("PDF: " + resul.pdf + " archivos");
+        lblOtros.setText("OTROS: " + resul.otros + " archivos");
+
+
+      areaResultados.setText("");
+        if (resul.rutasEncontradas.isEmpty()) {
+            areaResultados.setText("No se encontraron archivos que coincidan con los criterios.");
+        } else {
+            for (String ruta : resul.rutasEncontradas) {
+                areaResultados.append(ruta + "\n");
+            }
+        }  
+        
+        
+        
+        
+    }
+
+       
            
 }
